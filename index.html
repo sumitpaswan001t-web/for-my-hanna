@@ -6,12 +6,16 @@
     <meta name="description" content="A special website for Hanna from her Sweetie. India to Philippines.">
     <title>For My Hanna ❤️</title>
     
+    <!-- Preconnect for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://raw.githubusercontent.com">
+    <link rel="preconnect" href="https://lh3.googleusercontent.com">
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <!-- Lucide Icons -->
@@ -20,74 +24,52 @@
     <!-- Custom Styles -->
     <style>
         /* Typography */
-        h1, h2, .script-font {
-            font-family: 'Great Vibes', cursive;
-        }
-        body {
-            font-family: 'Nunito', sans-serif;
-            scroll-behavior: smooth;
-        }
+        h1, h2, .script-font { font-family: 'Great Vibes', cursive; }
+        body { font-family: 'Nunito', sans-serif; }
 
         /* Animations */
         .fade-in-section {
             opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 1s ease-out, transform 1s ease-out;
-            will-change: opacity, visibility;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            will-change: opacity, transform;
         }
         .fade-in-section.is-visible {
             opacity: 1;
             transform: none;
         }
 
-        /* Floating Animation for Hero Image */
+        /* Hero Float */
         @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
-        .float-img {
-            animation: float 4s ease-in-out infinite;
-        }
+        .float-img { animation: float 5s ease-in-out infinite; }
 
-        /* Heart Beating Animation */
+        /* Heartbeat */
         @keyframes heartbeat {
-            0% { transform: scale(1); }
-            15% { transform: scale(1.15); }
-            30% { transform: scale(1); }
-            45% { transform: scale(1.15); }
-            60% { transform: scale(1); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
-        .heart-beat {
-            animation: heartbeat 2s infinite;
-        }
+        .heart-beat { animation: heartbeat 1.5s infinite; }
 
-        /* Dotted Line Animation for Distance */
+        /* Path Animation */
         @keyframes dash {
-            to {
-                stroke-dashoffset: 0;
-            }
+            to { stroke-dashoffset: 0; }
         }
         .path-line {
-            stroke-dasharray: 10;
+            stroke-dasharray: 8;
             stroke-dashoffset: 100;
-            animation: dash 5s linear infinite;
+            animation: dash 8s linear infinite;
         }
         
-        /* Pill Hover Effect */
-        .pill-hover:hover {
-            transform: scale(1.05) rotate(2deg);
-            background-color: #fce7f3; /* pink-100 */
-        }
-        /* Mobile Active State for Pills */
-        .pill-hover:active {
-            transform: scale(0.95);
-            background-color: #fbcfe8; /* pink-200 */
-        }
+        /* Interactive Elements */
+        .pill-hover:hover { transform: scale(1.05) rotate(1deg); background-color: #fce7f3; }
+        .pill-hover:active { transform: scale(0.95); }
 
-        /* Falling Petals Animation */
+        /* Falling Petals */
         @keyframes falling {
-            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 1; }
+            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0.8; }
             100% { transform: translateY(100vh) translateX(20px) rotate(360deg); opacity: 0; }
         }
         .petal {
@@ -95,103 +77,128 @@
             background-color: #fecdd3;
             border-radius: 100% 0% 100% 0%;
             animation: falling 10s linear infinite;
-            z-index: 1;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        /* Envelope Styles */
+        /* ENVELOPE FIXES - Preventing Overlap */
         .envelope-container {
-            perspective: 1000px;
-            cursor: pointer;
+            position: relative;
+            overflow: visible; /* Changed to visible so content can expand */
         }
-        .envelope-content {
-            transition: max-height 1s ease-in-out, opacity 1s ease-in-out;
+        
+        /* The Cover needs higher Z-index to hide content initially */
+        #envelope-cover {
+            z-index: 20; 
+            transition: opacity 0.6s ease-out;
+        }
+        
+        /* The Content sits below */
+        #letter-content {
+            position: relative;
+            z-index: 10;
             max-height: 0;
             opacity: 0;
             overflow: hidden;
+            transition: max-height 1s ease-in-out, opacity 1s ease-in-out;
         }
-        .envelope-content.open {
-            max-height: 1200px;
+        
+        #letter-content.open {
+            max-height: 2000px;
             opacity: 1;
+            overflow: visible;
         }
         
         /* Lightbox */
         #lightbox {
             display: none;
             position: fixed;
+            inset: 0;
             z-index: 100;
-            inset: 0; /* Ensures full cover on mobile */
             background-color: rgba(0,0,0,0.95);
             backdrop-filter: blur(5px);
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 1rem;
         }
-        #lightbox.active {
-            display: flex;
-        }
+        #lightbox.active { display: flex; animation: fadeIn 0.3s ease; }
         #lightbox img {
             max-width: 100%;
-            max-height: 100%;
+            max-height: 90vh;
             border-radius: 8px;
-            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
             object-fit: contain;
         }
         
-        /* Music Button Animation Class */
-        .spin-slow {
-            animation: spin 3s linear infinite;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        /* AUDIO VISUALIZER STYLES */
+        .wave-bar {
+            background-color: #f43f5e;
+            width: 5px;
+            border-radius: 9999px;
+            height: 4px;
+            /* No transition in CSS for height to allow instant JS updates for music sync */
         }
         
-        /* Toast Notification for Music */
+        /* Pulse effect for the button itself on beats */
+        .beat-pulse {
+            transform: scale(1.15);
+            box-shadow: 0 0 25px rgba(244, 63, 94, 0.4);
+        }
+        
+        /* Toast Notification */
         #music-toast {
             opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
         }
         #music-toast.show {
             opacity: 1;
             transform: translateY(0);
         }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
-<body class="bg-stone-50 text-stone-800 antialiased overflow-x-hidden relative">
+<body class="bg-stone-50 text-stone-800 antialiased overflow-x-hidden relative selection:bg-rose-200">
 
-    <!-- FLOATING MUSIC BUTTON (UPDATED WITH FADE LOGIC) -->
-    <div class="fixed bottom-10 right-6 z-50 flex flex-col items-end gap-2">
+    <!-- FLOATING MUSIC BUTTON (WITH REAL SYNC VISUALIZER) -->
+    <div class="fixed bottom-8 right-6 z-50 flex flex-col items-end gap-2">
         <!-- Toast Notification -->
-        <div id="music-toast" class="bg-black/70 text-white text-xs px-3 py-1 rounded-full mb-2 backdrop-blur pointer-events-none transition-opacity duration-300 opacity-0">
-            Tap to play
+        <div id="music-toast" class="bg-white/90 text-rose-500 font-bold text-xs px-4 py-2 rounded-full mb-1 shadow-lg backdrop-blur pointer-events-none border border-rose-100">
+            Tap to play 🎵
         </div>
         
-        <button id="music-btn" onclick="toggleMusic()" class="bg-white/90 backdrop-blur-md p-4 rounded-full shadow-xl border border-rose-200 hover:scale-110 active:scale-90 transition-transform text-rose-500 group ring-2 ring-rose-100/50">
-            <!-- Icon changes based on state -->
-            <i id="music-icon" data-lucide="music" size="24"></i>
+        <button id="music-btn" onclick="toggleMusic()" class="bg-white/80 backdrop-blur-md w-14 h-14 rounded-full shadow-2xl border border-rose-200 active:scale-95 transition-all duration-150 text-rose-500 group ring-4 ring-rose-50 flex items-center justify-center overflow-hidden">
+            
+            <!-- 1. Default State: Music Icon -->
+            <i id="music-icon" data-lucide="music" size="24" class="relative z-10 transition-all duration-300"></i>
+            
+            <!-- 2. Active State: Syncing Wave Animation (Hidden by default) -->
+            <div id="wave-container" class="hidden flex items-end justify-center gap-1 h-8 w-8 pb-2">
+                <div class="wave-bar" id="bar-1"></div>
+                <div class="wave-bar" id="bar-2"></div>
+                <div class="wave-bar" id="bar-3"></div>
+                <div class="wave-bar" id="bar-4"></div>
+            </div>
+
         </button>
         
-        <!-- Audio Player with DIRECT GITHUB LINK -->
-        <audio id="bg-music" loop>
+        <!-- Audio Player with CrossOrigin for Frequency Analysis -->
+        <audio id="bg-music" loop preload="auto" crossorigin="anonymous">
              <source src="https://raw.githubusercontent.com/sumitpaswan001t-web/for-my-hanna/a085c97e5f42e53b8f94961cf143a1b41f1652af/Daylight.mp3" type="audio/mp3">
         </audio>
     </div>
 
     <!-- HERO SECTION -->
     <section class="min-h-screen flex flex-col justify-center items-center relative overflow-hidden bg-gradient-to-b from-rose-50 via-white to-stone-50 px-4">
-        <!-- Falling Petals (Generated by JS) -->
         <div id="petals-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
 
-        <!-- Floating Hearts Background -->
         <div class="absolute top-10 left-10 text-rose-200 animate-pulse delay-100"><i data-lucide="heart" size="40"></i></div>
         <div class="absolute bottom-20 left-10 text-rose-200 animate-pulse delay-700"><i data-lucide="heart" size="56"></i></div>
         <div class="absolute top-1/2 right-8 text-rose-100 animate-pulse delay-300"><i data-lucide="heart" size="32"></i></div>
 
-        <div class="z-10 text-center max-w-4xl mx-auto mt-[-10vh]">
+        <div class="z-10 text-center max-w-4xl mx-auto mt-[-5vh]">
             <span class="text-rose-500 font-bold tracking-widest text-xs md:text-sm uppercase mb-4 block animate-fade-in-down">For my favorite person</span>
             
-            <!-- Optimized Title Size for Mobile -->
             <h1 class="text-5xl md:text-8xl text-rose-600 mb-6 font-normal script-font drop-shadow-sm leading-tight">
                 Hi Sweetie
             </h1>
@@ -200,22 +207,18 @@
                 From India to the Philippines, I made this little corner of the internet just for you.
             </p>
 
-            <!-- Placeholder for Main Hero Image -->
             <div class="relative w-56 h-56 md:w-80 md:h-80 mx-auto mb-10">
                 <div class="absolute inset-0 bg-rose-300 rounded-full blur-2xl opacity-30 animate-pulse"></div>
-                <!-- Updated Hero Image with your Drive link -->
                 <img src="https://lh3.googleusercontent.com/d/190uVx2OIL6g-nGXJH1T2il_1sLuSSMNp" 
                      referrerpolicy="no-referrer"
                      loading="eager"
                      alt="My Hanna" 
                      class="w-full h-full object-cover rounded-full border-4 border-white shadow-2xl float-img relative z-10">
                 <div class="absolute -bottom-2 -right-2 bg-white p-2 md:p-3 rounded-full shadow-lg z-20 heart-beat border border-rose-100 flex items-center justify-center">
-                    <!-- Replaced Emoji with Image Flag for cross-platform visibility -->
                     <img src="https://flagcdn.com/w40/ph.png" alt="Philippines Flag" class="w-6 h-auto md:w-8 rounded-sm shadow-sm">
                 </div>
             </div>
 
-            <!-- Added smooth scroll behavior to the click event -->
             <button onclick="document.getElementById('about').scrollIntoView({ behavior: 'smooth' })" class="group bg-rose-500 hover:bg-rose-600 text-white px-8 py-3 rounded-full transition-all shadow-lg hover:shadow-rose-300 flex items-center gap-2 mx-auto hover:-translate-y-1 active:scale-95 text-sm md:text-base">
                 Scroll with me
                 <i data-lucide="arrow-down" class="group-hover:translate-y-1 transition-transform" size="18"></i>
@@ -231,11 +234,8 @@
         </div>
 
         <div class="flex flex-col md:flex-row items-center gap-10 md:gap-16">
-            <!-- Image Side -->
             <div class="w-full md:w-1/2 relative group px-2">
                 <div class="absolute inset-0 bg-rose-200 transform rotate-3 rounded-2xl transition-transform group-hover:rotate-6"></div>
-                <!-- Updated Image Source with the new Drive link -->
-                <!-- Added loading="lazy" for optimization -->
                 <img src="https://lh3.googleusercontent.com/d/1-1Gfv2YiZ0wD91VjQ3EN3-Qegq0GlVXg" 
                      referrerpolicy="no-referrer"
                      loading="lazy"
@@ -243,7 +243,6 @@
                      class="relative w-full rounded-2xl shadow-xl transform -rotate-2 group-hover:rotate-0 transition-all duration-500 object-cover h-80 md:h-96">
             </div>
 
-            <!-- Text Side -->
             <div class="w-full md:w-1/2 space-y-6 text-center md:text-left">
                 <h3 class="text-2xl font-bold text-stone-800 flex items-center justify-center md:justify-start gap-2">
                     My Filipina Princess <i data-lucide="crown" class="text-yellow-400 fill-yellow-400" size="20"></i>
@@ -270,26 +269,20 @@
             </div>
 
             <div class="relative">
-                <!-- Vertical Line (Left on mobile, Center on desktop) -->
                 <div class="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 w-0.5 h-full bg-rose-200"></div>
 
                 <!-- Memory 1 -->
                 <div class="relative mb-12">
                     <div class="flex flex-col md:flex-row items-center justify-between w-full">
-                        <!-- Desktop: Left Side content -->
                         <div class="w-full md:w-5/12 order-2 md:order-1 pl-12 md:pl-0 pr-0 md:pr-8 md:text-right text-left mt-2 md:mt-0">
                             <div class="bg-white p-6 rounded-xl shadow-md border border-stone-100 hover:shadow-xl transition-all hover:-translate-y-1">
                                 <h4 class="font-bold text-lg text-rose-500">First Time We Talked</h4>
                                 <p class="text-sm text-stone-500 mt-2">I didn't know then that a simple message would change my life forever. I just knew I wanted to talk to you more.</p>
                             </div>
                         </div>
-                        
-                        <!-- Dot -->
                         <div class="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-8 h-8 bg-rose-500 rounded-full border-4 border-white z-10 flex items-center justify-center text-white text-[10px]">
                            <i data-lucide="message-circle" size="14"></i>
                         </div>
-
-                        <!-- Date/Label -->
                         <div class="w-full md:w-5/12 order-1 md:order-2 pl-12 md:pl-8 text-left">
                             <span class="text-xs font-bold tracking-widest text-stone-400 uppercase">The Beginning</span>
                         </div>
@@ -299,17 +292,12 @@
                 <!-- Memory 2 -->
                 <div class="relative mb-12">
                     <div class="flex flex-col md:flex-row items-center justify-between w-full">
-                        <!-- Label -->
                         <div class="w-full md:w-5/12 order-1 md:order-1 pl-12 md:pl-0 md:pr-8 text-left md:text-right">
                             <span class="text-xs font-bold tracking-widest text-stone-400 uppercase">The Connection</span>
                         </div>
-                        
-                        <!-- Dot -->
                         <div class="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-8 h-8 bg-rose-500 rounded-full border-4 border-white z-10 flex items-center justify-center text-white text-[10px]">
                             <i data-lucide="heart" size="14" class="fill-current"></i>
                         </div>
-                        
-                        <!-- Content Box -->
                         <div class="w-full md:w-5/12 order-2 md:order-2 pl-12 md:pl-8 mt-2 md:mt-0 text-left">
                             <div class="bg-white p-6 rounded-xl shadow-md border border-stone-100 hover:shadow-xl transition-all hover:-translate-y-1">
                                 <h4 class="font-bold text-lg text-rose-500">Becoming "Sweetie"</h4>
@@ -322,26 +310,20 @@
                 <!-- Memory 3 -->
                 <div class="relative">
                     <div class="flex flex-col md:flex-row items-center justify-between w-full">
-                        <!-- Content Box -->
                         <div class="w-full md:w-5/12 order-2 md:order-1 pl-12 md:pl-0 pr-0 md:pr-8 md:text-right text-left mt-2 md:mt-0">
                             <div class="bg-white p-6 rounded-xl shadow-md border border-stone-100 hover:shadow-xl transition-all hover:-translate-y-1">
                                 <h4 class="font-bold text-lg text-rose-500">Dreaming of Meeting</h4>
                                 <p class="text-sm text-stone-500 mt-2">Counting down the days until these miles disappear and I can finally hold your hand.</p>
                             </div>
                         </div>
-                        
-                        <!-- Dot -->
                         <div class="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-8 h-8 bg-rose-500 rounded-full border-4 border-white z-10 flex items-center justify-center text-white text-[10px]">
                             <i data-lucide="plane" size="14"></i>
                         </div>
-                        
-                        <!-- Label -->
                         <div class="w-full md:w-5/12 order-1 md:order-2 pl-12 md:pl-8 text-left">
                              <span class="text-xs font-bold tracking-widest text-stone-400 uppercase">The Future</span>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
@@ -360,7 +342,6 @@
                     <div class="relative w-28 h-28 md:w-32 md:h-32 bg-white/10 backdrop-blur-md rounded-full flex flex-col items-center justify-center shadow-2xl mx-auto mb-4 border-2 border-rose-500 group-hover:border-white transition-colors">
                         <span class="text-xl md:text-2xl font-mono" id="india-time">00:00</span>
                         <span class="text-[10px] md:text-xs text-rose-300 uppercase tracking-widest mt-1">IST</span>
-                        <!-- Updated Flag Badge -->
                         <div class="absolute -bottom-3 bg-white text-rose-900 text-[10px] md:text-xs px-3 py-1 rounded-full font-bold flex items-center gap-1 shadow-md whitespace-nowrap">
                             <img src="https://flagcdn.com/w20/in.png" alt="IN" class="w-4 h-auto rounded-[1px]"> India
                         </div>
@@ -368,9 +349,8 @@
                     <p class="text-rose-200 text-sm">Me</p>
                 </div>
 
-                <!-- Animated Path (Mobile: Arrow, Desktop: Path) -->
+                <!-- Path -->
                 <div class="flex flex-col items-center justify-center w-full md:w-48 my-4 md:my-0">
-                    <!-- Desktop SVG -->
                     <div class="hidden md:block relative w-full h-12">
                         <svg class="w-full h-full" viewBox="0 0 200 40">
                             <path d="M10,20 Q100,0 190,20" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="5,5" />
@@ -380,7 +360,6 @@
                             <i data-lucide="heart" size="16" class="fill-rose-500 text-rose-500"></i>
                         </div>
                     </div>
-                    <!-- Mobile Arrow -->
                     <div class="md:hidden text-rose-300 animate-bounce">
                         <i data-lucide="arrow-down" size="24"></i>
                     </div>
@@ -392,7 +371,6 @@
                     <div class="relative w-28 h-28 md:w-32 md:h-32 bg-white/10 backdrop-blur-md rounded-full flex flex-col items-center justify-center shadow-2xl mx-auto mb-4 border-2 border-rose-500 group-hover:border-white transition-colors">
                          <span class="text-xl md:text-2xl font-mono" id="ph-time">00:00</span>
                          <span class="text-[10px] md:text-xs text-rose-300 uppercase tracking-widest mt-1">PHT</span>
-                         <!-- Updated Flag Badge -->
                          <div class="absolute -bottom-3 bg-white text-rose-900 text-[10px] md:text-xs px-3 py-1 rounded-full font-bold flex items-center gap-1 shadow-md whitespace-nowrap">
                             <img src="https://flagcdn.com/w20/ph.png" alt="PH" class="w-4 h-auto rounded-[1px]"> Hanna
                         </div>
@@ -407,7 +385,7 @@
         </div>
     </section>
 
-    <!-- GALLERY (With Lightbox - Added Touch Feedback) -->
+    <!-- GALLERY -->
     <section class="py-20 px-4 max-w-6xl mx-auto fade-in-section">
         <div class="text-center mb-10 md:mb-12">
             <h2 class="text-4xl md:text-5xl text-rose-500 script-font">Gallery of You</h2>
@@ -417,53 +395,25 @@
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
             <!-- Photo 1 -->
             <div class="group relative aspect-square overflow-hidden rounded-xl cursor-pointer active:scale-95 transition-transform duration-200" onclick="openLightbox(this)">
-                <!-- Added loading="lazy" -->
-                <img src="https://lh3.googleusercontent.com/d/1AgHJ4XKFuvWVWM0gbCMbcUrmK9BFFQsO" 
-                     referrerpolicy="no-referrer" 
-                     loading="lazy"
-                     class="w-full h-full object-cover transition duration-700 group-hover:scale-110" 
-                     alt="Hanna Photo 1">
-                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <i data-lucide="zoom-in" class="text-white"></i>
-                </div>
+                <img src="https://lh3.googleusercontent.com/d/1AgHJ4XKFuvWVWM0gbCMbcUrmK9BFFQsO" referrerpolicy="no-referrer" loading="lazy" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Hanna Photo 1">
             </div>
             <!-- Photo 2 -->
             <div class="group relative aspect-square overflow-hidden rounded-xl cursor-pointer active:scale-95 transition-transform duration-200" onclick="openLightbox(this)">
-                <!-- Added loading="lazy" -->
-                <img src="https://lh3.googleusercontent.com/d/1vR7sYzY6cXZlTblKlMepZ07amwktfAZ-" 
-                     referrerpolicy="no-referrer" 
-                     loading="lazy"
-                     class="w-full h-full object-cover transition duration-700 group-hover:scale-110" 
-                     alt="Hanna Photo 2">
+                <img src="https://lh3.googleusercontent.com/d/1vR7sYzY6cXZlTblKlMepZ07amwktfAZ-" referrerpolicy="no-referrer" loading="lazy" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Hanna Photo 2">
             </div>
             <!-- Photo 3 -->
             <div class="group relative aspect-square overflow-hidden rounded-xl cursor-pointer active:scale-95 transition-transform duration-200" onclick="openLightbox(this)">
-                <!-- Added loading="lazy" -->
-                <img src="https://lh3.googleusercontent.com/d/1uyBdCpw8G5ls9G6C0RSNpyf24KXMmZj2" 
-                     referrerpolicy="no-referrer" 
-                     loading="lazy"
-                     class="w-full h-full object-cover transition duration-700 group-hover:scale-110" 
-                     alt="Hanna Photo 3">
+                <img src="https://lh3.googleusercontent.com/d/1uyBdCpw8G5ls9G6C0RSNpyf24KXMmZj2" referrerpolicy="no-referrer" loading="lazy" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Hanna Photo 3">
             </div>
             <!-- Photo 4 -->
             <div class="group relative aspect-square overflow-hidden rounded-xl cursor-pointer active:scale-95 transition-transform duration-200" onclick="openLightbox(this)">
-                <!-- Added loading="lazy" -->
-                <img src="https://lh3.googleusercontent.com/d/1dW0Wn-6EQggK05SR61SDpjuBYnmqLbsv" 
-                     referrerpolicy="no-referrer" 
-                     loading="lazy"
-                     class="w-full h-full object-cover transition duration-700 group-hover:scale-110" 
-                     alt="Hanna Photo 4">
+                <img src="https://lh3.googleusercontent.com/d/1dW0Wn-6EQggK05SR61SDpjuBYnmqLbsv" referrerpolicy="no-referrer" loading="lazy" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Hanna Photo 4">
             </div>
             <!-- Photo 5 -->
             <div class="group relative aspect-square overflow-hidden rounded-xl cursor-pointer active:scale-95 transition-transform duration-200" onclick="openLightbox(this)">
-                <!-- Added loading="lazy" -->
-                <img src="https://lh3.googleusercontent.com/d/1PZqo02kbuovpNYBIHImMqIOcuDmjQK2n" 
-                     referrerpolicy="no-referrer" 
-                     loading="lazy"
-                     class="w-full h-full object-cover transition duration-700 group-hover:scale-110" 
-                     alt="Hanna Photo 5">
+                <img src="https://lh3.googleusercontent.com/d/1PZqo02kbuovpNYBIHImMqIOcuDmjQK2n" referrerpolicy="no-referrer" loading="lazy" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Hanna Photo 5">
             </div>
-             <!-- Photo 6 (Placeholder) -->
+             <!-- Photo 6 -->
              <div class="group relative aspect-square overflow-hidden rounded-xl flex items-center justify-center bg-rose-50 text-center p-4 border-2 border-dashed border-rose-200">
                 <div>
                     <i data-lucide="camera" class="mx-auto text-rose-300 mb-2"></i>
@@ -477,41 +427,24 @@
     <section class="py-16 bg-stone-50 px-4 fade-in-section">
         <div class="max-w-4xl mx-auto text-center">
             <h2 class="text-4xl text-rose-500 script-font mb-8">The Little Things I Love</h2>
-            
             <div class="flex flex-wrap justify-center gap-3 md:gap-4">
-                <span class="pill-hover bg-white px-5 py-2 md:px-6 md:py-3 rounded-full shadow-sm text-stone-600 border border-stone-100 cursor-default transition-all duration-300 select-none text-sm md:text-base">
-                    The way you say "Sweetie" 🥺
-                </span>
-                <span class="pill-hover bg-white px-5 py-2 md:px-6 md:py-3 rounded-full shadow-sm text-stone-600 border border-stone-100 cursor-default transition-all duration-300 select-none text-sm md:text-base">
-                    Your sleepy voice 💤
-                </span>
-                <span class="pill-hover bg-white px-5 py-2 md:px-6 md:py-3 rounded-full shadow-sm text-stone-600 border border-stone-100 cursor-default transition-all duration-300 select-none text-sm md:text-base">
-                    Your shy smile
-                </span>
-                <span class="pill-hover bg-white px-5 py-2 md:px-6 md:py-3 rounded-full shadow-sm text-stone-600 border border-stone-100 cursor-default transition-all duration-300 select-none text-sm md:text-base">
-                    Your random texts
-                </span>
-                <span class="pill-hover bg-white px-5 py-2 md:px-6 md:py-3 rounded-full shadow-sm text-stone-600 border border-stone-100 cursor-default transition-all duration-300 select-none text-sm md:text-base">
-                    Your kindness
-                </span>
-                <span class="pill-hover bg-white px-5 py-2 md:px-6 md:py-3 rounded-full shadow-sm text-stone-600 border border-stone-100 cursor-default transition-all duration-300 select-none text-sm md:text-base">
-                    Just being YOU ❤️
-                </span>
+                <span class="pill-hover bg-white px-5 py-2 md:px-6 md:py-3 rounded-full shadow-sm text-stone-600 border border-stone-100 cursor-default select-none text-sm md:text-base">The way you say "Sweetie" 🥺</span>
+                <span class="pill-hover bg-white px-5 py-2 md:px-6 md:py-3 rounded-full shadow-sm text-stone-600 border border-stone-100 cursor-default select-none text-sm md:text-base">Your sleepy voice 💤</span>
+                <span class="pill-hover bg-white px-5 py-2 md:px-6 md:py-3 rounded-full shadow-sm text-stone-600 border border-stone-100 cursor-default select-none text-sm md:text-base">Your shy smile</span>
+                <span class="pill-hover bg-white px-5 py-2 md:px-6 md:py-3 rounded-full shadow-sm text-stone-600 border border-stone-100 cursor-default select-none text-sm md:text-base">Your random texts</span>
+                <span class="pill-hover bg-white px-5 py-2 md:px-6 md:py-3 rounded-full shadow-sm text-stone-600 border border-stone-100 cursor-default select-none text-sm md:text-base">Your kindness</span>
+                <span class="pill-hover bg-white px-5 py-2 md:px-6 md:py-3 rounded-full shadow-sm text-stone-600 border border-stone-100 cursor-default select-none text-sm md:text-base">Just being YOU ❤️</span>
             </div>
         </div>
     </section>
 
-    <!-- INTERACTIVE LETTER -->
+    <!-- LETTER (BUG FIXED) -->
     <section class="py-20 md:py-24 px-4 bg-gradient-to-b from-stone-50 to-rose-100 fade-in-section">
         <div class="max-w-2xl mx-auto text-center">
             <h2 class="text-3xl font-bold text-stone-800 mb-8 font-serif">A Letter To My Hanna</h2>
-            
-            <!-- Envelope UI -->
-            <div id="envelope" class="bg-white max-w-lg mx-auto p-6 md:p-12 rounded-lg shadow-2xl relative transition-all duration-700 cursor-pointer group active:scale-95" onclick="openLetter()">
-                
-                <!-- Envelope Cover (Visible initially) -->
-                <div id="envelope-cover" class="absolute inset-0 bg-white z-20 flex flex-col items-center justify-center rounded-lg border-2 border-rose-100">
-                    <!-- Added Bouncing Animation to Indicate Interaction -->
+            <div id="envelope" class="bg-white max-w-lg mx-auto p-6 md:p-12 rounded-lg shadow-2xl transition-all duration-700 cursor-pointer group active:scale-95 envelope-container" onclick="openLetter()">
+                <!-- Cover -->
+                <div id="envelope-cover" class="absolute inset-0 bg-white flex flex-col items-center justify-center rounded-lg border-2 border-rose-100">
                     <div class="bg-rose-50 p-4 rounded-full mb-4 animate-bounce group-hover:scale-110 transition-transform duration-300">
                         <i data-lucide="mail" class="text-rose-400" size="48"></i>
                     </div>
@@ -519,39 +452,20 @@
                     <div class="w-full h-1 bg-rose-100 absolute bottom-0 left-0"></div>
                     <div class="w-full h-1 bg-rose-100 absolute top-0 left-0"></div>
                 </div>
-
-                <!-- The Letter Content (Hidden initially) -->
-                <div id="letter-content" class="opacity-0 transform translate-y-4 transition-all duration-1000">
+                <!-- Content -->
+                <div id="letter-content">
                     <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-24 md:w-32 h-6 md:h-8 bg-rose-200 opacity-60 rotate-2"></div>
-                    
                     <div class="prose prose-stone text-stone-600 leading-relaxed font-serif text-base md:text-lg text-left">
                         <p class="font-bold text-rose-500">Dear Hanna,</p>
-                        <p>
-                            I wanted to write this so you can read it anytime you miss me or feel the distance between us.
-                        </p>
-                        <p>
-                            I know things haven’t been easy for you lately, with your family, your work, and everything happening around you. But even with all of that, you still make time for me, you still care for me, and that means more than you know.
-                        </p>
-                        <p>
-                            The distance and the different timings make things hard sometimes, but you always make it worth it. Every small message from you, every “sweetie,” every update about your day… all of it makes me feel close to you, even when we’re far apart.
-                        </p>
-                        <p>
-                            Thank you for trusting me, for opening your heart to me during your hardest days and your happiest ones. I promise I’ll always try to understand you, listen to you, and be there for you, whether I’m here in India or someday standing right beside you in the Philippines.
-                        </p>
-                        <p>
-                            You’re the first person I think of when I wake up and the one I miss before I sleep. And even when your days get heavy, even when you feel lost or tired, remember this: you are not alone. I’m with you, my Hanna. Always.
-                        </p>
-                        <p>
-                            One day, we’ll close this distance, no rushing, no pressure, just something to look forward to. Until then, keep this letter close to your heart whenever you need a little comfort.
-                        </p>
-                        <p>
-                            You are so loved, my Hanna. More than you know.
-                        </p>
+                        <p>I wanted to write this so you can read it anytime you miss me or feel the distance between us.</p>
+                        <p>I know things haven’t been easy for you lately, with your family, your work, and everything happening around you. But even with all of that, you still make time for me, you still care for me, and that means more than you know.</p>
+                        <p>The distance and the different timings make things hard sometimes, but you always make it worth it. Every small message from you, every “sweetie,” every update about your day… all of it makes me feel close to you, even when we’re far apart.</p>
+                        <p>Thank you for trusting me, for opening your heart to me during your hardest days and your happiest ones. I promise I’ll always try to understand you, listen to you, and be there for you, whether I’m here in India or someday standing right beside you in the Philippines.</p>
+                        <p>You’re the first person I think of when I wake up and the one I miss before I sleep. And even when your days get heavy, even when you feel lost or tired, remember this: you are not alone. I’m with you, my Hanna. Always.</p>
+                        <p>One day, we’ll close this distance, no rushing, no pressure, just something to look forward to. Until then, keep this letter close to your heart whenever you need a little comfort.</p>
+                        <p>You are so loved, my Hanna. More than you know.</p>
                         <br>
-                        <p>
-                            Love always,<br>
-                            <span class="text-rose-500 font-bold script-font text-3xl block mt-2">Your Sweetie</span>
-                        </p>
+                        <p>Love always,<br><span class="text-rose-500 font-bold script-font text-3xl block mt-2">Your Sweetie</span></p>
                     </div>
                 </div>
             </div>
@@ -562,135 +476,145 @@
     <footer class="bg-rose-900 text-rose-200 py-8 text-center text-sm border-t border-rose-800">
         <p>Made for my Hanna by her Sweetie</p>
         <div class="mt-2 text-xs opacity-70 flex justify-center items-center gap-2">
-            <span>India</span>
-            <img src="https://flagcdn.com/w20/in.png" alt="India Flag" class="w-4 h-auto inline-block rounded-[1px]">
+            <span>India</span> <img src="https://flagcdn.com/w20/in.png" alt="IN" class="w-4 h-auto rounded-[1px]">
             <span>&bull;</span>
-            <span>Philippines</span>
-            <img src="https://flagcdn.com/w20/ph.png" alt="Philippines Flag" class="w-4 h-auto inline-block rounded-[1px]">
+            <span>Philippines</span> <img src="https://flagcdn.com/w20/ph.png" alt="PH" class="w-4 h-auto rounded-[1px]">
         </div>
-        <div class="mt-4 animate-bounce">
-            ❤️
-        </div>
+        <div class="mt-4 animate-bounce">❤️</div>
     </footer>
 
-    <!-- LIGHTBOX MODAL -->
-    <div id="lightbox" onclick="closeLightbox()">
-        <img id="lightbox-img" src="" alt="Full screen memory">
-    </div>
+    <div id="lightbox" onclick="closeLightbox()"><img id="lightbox-img" src="" alt="Memory"></div>
 
-    <!-- SCRIPTS -->
     <script>
-        // Initialize Lucide Icons
         lucide.createIcons();
 
-        // 1. CLOCK LOGIC
+        // 1. Clocks
         function updateClocks() {
             const now = new Date();
-            
-            // India Time (UTC+5:30)
-            const indiaOptions = { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: false };
-            const indiaTime = now.toLocaleTimeString('en-US', indiaOptions);
-            document.getElementById('india-time').innerText = indiaTime;
-
-            // Philippines Time (UTC+8:00)
-            const phOptions = { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', hour12: false };
-            const phTime = now.toLocaleTimeString('en-US', phOptions);
-            document.getElementById('ph-time').innerText = phTime;
+            document.getElementById('india-time').innerText = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour:'2-digit', minute:'2-digit', hour12:false });
+            document.getElementById('ph-time').innerText = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Manila', hour:'2-digit', minute:'2-digit', hour12:false });
         }
         setInterval(updateClocks, 1000);
-        updateClocks(); // Run immediately
+        updateClocks();
 
-        // 2. LETTER OPENING LOGIC
+        // 2. Letter - FIX FOR OVERLAP
         function openLetter() {
             const cover = document.getElementById('envelope-cover');
             const content = document.getElementById('letter-content');
             
-            // Fade out cover
             cover.style.opacity = '0';
-            cover.style.pointerEvents = 'none'; // Allow clicks to pass through
+            cover.style.pointerEvents = 'none';
             
-            // Show content
+            // Slight delay to allow cover to fade out before content grows
             setTimeout(() => {
-                content.style.opacity = '1';
-                content.style.transform = 'translateY(0)';
+                cover.style.display = 'none'; // Completely remove it
+                content.classList.add('open');
             }, 300);
         }
 
-        // 3. FALLING PETALS LOGIC
-        function createPetals() {
-            const container = document.getElementById('petals-container');
-            const petalCount = 15; // Number of petals
-            
-            for (let i = 0; i < petalCount; i++) {
-                const petal = document.createElement('div');
-                petal.classList.add('petal');
-                
-                // Randomize positions and animation details
-                const left = Math.random() * 100;
-                const animDuration = 6 + Math.random() * 5;
-                const delay = Math.random() * 5;
-                const size = 10 + Math.random() * 10;
-                
-                petal.style.left = `${left}%`;
-                petal.style.width = `${size}px`;
-                petal.style.height = `${size}px`;
-                petal.style.animationDuration = `${animDuration}s`;
-                petal.style.animationDelay = `${delay}s`;
-                petal.style.opacity = Math.random() * 0.7;
+        // 3. Petals
+        const container = document.getElementById('petals-container');
+        for (let i = 0; i < 15; i++) {
+            const petal = document.createElement('div');
+            petal.classList.add('petal');
+            petal.style.left = `${Math.random() * 100}%`;
+            petal.style.width = `${10 + Math.random() * 10}px`;
+            petal.style.height = `${10 + Math.random() * 10}px`;
+            petal.style.animationDuration = `${6 + Math.random() * 5}s`;
+            petal.style.animationDelay = `${Math.random() * 5}s`;
+            container.appendChild(petal);
+        }
 
-                container.appendChild(petal);
+        // 4. Lightbox
+        function openLightbox(el) {
+            document.getElementById('lightbox-img').src = el.querySelector('img').src;
+            document.getElementById('lightbox').classList.add('active');
+        }
+        function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
+
+        // 5. REAL-TIME AUDIO VISUALIZER (SMOOTH & RESPONSIVE)
+        const audio = document.getElementById('bg-music');
+        const btn = document.getElementById('music-btn');
+        const icon = document.getElementById('music-icon');
+        const waveContainer = document.getElementById('wave-container');
+        const toast = document.getElementById('music-toast');
+        const bars = [document.getElementById('bar-1'), document.getElementById('bar-2'), document.getElementById('bar-3'), document.getElementById('bar-4')];
+        
+        let audioContext, analyser, source, dataArray;
+        let animationId, fadeInterval;
+
+        function initAudio() {
+            if (!audioContext) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioContext = new AudioContext();
+                
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 64; // Low FFT size for punchy bars
+                analyser.smoothingTimeConstant = 0.8; // Smooths out the jitters
+                
+                // Connect Audio Source
+                if (!source) {
+                    source = audioContext.createMediaElementSource(audio);
+                    source.connect(analyser);
+                    analyser.connect(audioContext.destination);
+                }
+                
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+            }
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
             }
         }
-        createPetals();
 
-        // 4. LIGHTBOX LOGIC
-        function openLightbox(element) {
-            const imgSrc = element.querySelector('img').src;
-            const lightbox = document.getElementById('lightbox');
-            const lightboxImg = document.getElementById('lightbox-img');
+        function animateWaves() {
+            if (!analyser || audio.paused) return;
             
-            lightboxImg.src = imgSrc;
-            lightbox.classList.add('active');
-        }
+            analyser.getByteFrequencyData(dataArray);
+            
+            // Extract frequency bands (Bass to Treble)
+            const bass = dataArray[2] / 255; 
+            const lowMid = dataArray[5] / 255;
+            const mid = dataArray[10] / 255;
+            const treble = dataArray[20] / 255;
+            
+            // Apply height (Min 4px, Max 24px) - Smoothed by CSS transition
+            bars[0].style.height = `${4 + (bass * 20)}px`;
+            bars[1].style.height = `${4 + (lowMid * 24)}px`;
+            bars[2].style.height = `${4 + (mid * 20)}px`;
+            bars[3].style.height = `${4 + (treble * 16)}px`;
 
-        function closeLightbox() {
-            document.getElementById('lightbox').classList.remove('active');
-        }
+            // Beat Detection for Button Pulse (If bass is strong)
+            if (bass > 0.7) {
+                btn.classList.add('beat-pulse');
+            } else {
+                btn.classList.remove('beat-pulse');
+            }
 
-        // 5. BULLETPROOF MUSIC LOGIC (WITH GITHUB LINK & CINEMATIC FADE)
-        const mainMusicLink = "https://raw.githubusercontent.com/sumitpaswan001t-web/for-my-hanna/a085c97e5f42e53b8f94961cf143a1b41f1652af/Daylight.mp3";
-        const backupMusicLink = "https://cdn.pixabay.com/download/audio/2022/03/10/audio_c8c8a73467.mp3";
-        let fadeInterval;
+            animationId = requestAnimationFrame(animateWaves);
+        }
 
         function toggleMusic() {
-            const audio = document.getElementById('bg-music');
-            const button = document.getElementById('music-btn');
-            const toast = document.getElementById('music-toast');
-            
-            // Clear any existing fade intervals to prevent fighting
+            // Initialize Audio Context on first interaction
+            initAudio();
             clearInterval(fadeInterval);
 
             if (audio.paused) {
-                // STARTING PLAYBACK
-                button.classList.add('spin-slow');
-                button.classList.add('ring-yellow-300'); // Yellow ring = loading
-                toast.innerText = "Loading Music...";
+                // UI: Switch to Waves
+                icon.classList.add('hidden');
+                waveContainer.classList.remove('hidden');
+                toast.innerText = "Playing 🎵";
                 toast.classList.add('show');
                 
-                // Set initial volume to 0 for fade in
                 audio.volume = 0;
                 
-                // Try to play primary (GitHub link)
-                const playPromise = audio.play();
-                
+                let playPromise = audio.play();
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
-                        // Success
-                        toast.innerText = "Playing 🎵";
-                        button.classList.remove('ring-yellow-300');
-                        setTimeout(() => { toast.classList.remove('show'); }, 3000);
+                        // Start Visualizer
+                        cancelAnimationFrame(animationId);
+                        animateWaves();
                         
-                        // FADE IN LOGIC (0 to 1)
+                        // Fade In
                         let vol = 0;
                         fadeInterval = setInterval(() => {
                             if (vol < 1.0) {
@@ -698,59 +622,50 @@
                                 audio.volume = Math.min(vol, 1.0);
                             } else {
                                 clearInterval(fadeInterval);
+                                setTimeout(() => toast.classList.remove('show'), 3000);
                             }
-                        }, 100); 
-                    })
-                    .catch(error => {
+                        }, 100);
+                    }).catch(error => {
                         console.error("Playback failed:", error);
-                        // If it fails immediately
-                        toast.innerText = "Tap again if silent";
+                        icon.classList.remove('hidden');
+                        waveContainer.classList.add('hidden');
+                        toast.innerText = "Tap again";
                     });
                 }
             } else {
-                // STOPPING PLAYBACK (Fade Out)
-                toast.classList.remove('show'); // Hide text immediately on stop
+                // STOPPING
+                toast.innerText = "Paused";
+                toast.classList.add('show');
+                btn.classList.remove('beat-pulse');
                 
+                // Fade Out
                 let vol = audio.volume;
-                
-                // FADE OUT LOGIC (Current to 0)
                 fadeInterval = setInterval(() => {
                     if (vol > 0.05) {
-                        vol -= 0.05; 
+                        vol -= 0.1;
                         audio.volume = Math.max(vol, 0);
                     } else {
                         clearInterval(fadeInterval);
                         audio.pause();
-                        button.classList.remove('spin-slow');
-                        button.classList.remove('ring-yellow-300');
+                        cancelAnimationFrame(animationId);
+                        
+                        // Reset UI
+                        icon.classList.remove('hidden');
+                        waveContainer.classList.add('hidden');
+                        setTimeout(() => toast.classList.remove('show'), 2000);
+                        audio.volume = 1.0; 
                     }
-                }, 100);
+                }, 50);
             }
-            
-            // SMART ERROR HANDLER
-            audio.onerror = function() {
-                console.log("Main link failed. Switching to backup.");
-                if (audio.src !== backupMusicLink) {
-                    toast.innerText = "Switching to backup song...";
-                    audio.src = backupMusicLink;
-                    audio.play();
-                }
-            };
         }
 
-        // 6. SCROLL ANIMATIONS
-        document.addEventListener('DOMContentLoaded', () => {
-            const observerOptions = { threshold: 0.1 };
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                    }
-                });
-            }, observerOptions);
-
-            document.querySelectorAll('.fade-in-section').forEach(section => observer.observe(section));
-        });
+        // 6. Scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('is-visible');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in-section').forEach(section => observer.observe(section));
     </script>
 </body>
 </html>
