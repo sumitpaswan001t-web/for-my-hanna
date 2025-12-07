@@ -136,17 +136,46 @@
             box-shadow: 0 0 20px rgba(255,255,255,0.2);
             object-fit: contain;
         }
+        
+        /* Music Button Animation Class */
+        .spin-slow {
+            animation: spin 3s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Toast Notification for Music */
+        #music-toast {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        #music-toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body class="bg-stone-50 text-stone-800 antialiased overflow-x-hidden relative">
 
-    <!-- FLOATING MUSIC BUTTON (Optimized Position for Mobile Safe Areas) -->
-    <div class="fixed bottom-10 right-6 z-50">
-        <button onclick="toggleMusic()" class="bg-white/90 backdrop-blur-md p-4 rounded-full shadow-xl border border-rose-200 hover:scale-110 active:scale-90 transition-transform text-rose-500 group ring-2 ring-rose-100/50">
-            <i data-lucide="music" class="group-hover:animate-spin" size="24"></i>
+    <!-- FLOATING MUSIC BUTTON (UPDATED WITH FADE LOGIC) -->
+    <div class="fixed bottom-10 right-6 z-50 flex flex-col items-end gap-2">
+        <!-- Toast Notification -->
+        <div id="music-toast" class="bg-black/70 text-white text-xs px-3 py-1 rounded-full mb-2 backdrop-blur pointer-events-none transition-opacity duration-300 opacity-0">
+            Tap to play
+        </div>
+        
+        <button id="music-btn" onclick="toggleMusic()" class="bg-white/90 backdrop-blur-md p-4 rounded-full shadow-xl border border-rose-200 hover:scale-110 active:scale-90 transition-transform text-rose-500 group ring-2 ring-rose-100/50">
+            <!-- Icon changes based on state -->
+            <i id="music-icon" data-lucide="music" size="24"></i>
         </button>
-        <!-- Hidden Audio Element -->
-        <!-- <audio id="bg-music" loop src="your-song.mp3"></audio> -->
+        
+        <!-- Audio Player with DIRECT GITHUB LINK -->
+        <audio id="bg-music" loop>
+             <source src="https://raw.githubusercontent.com/sumitpaswan001t-web/for-my-hanna/a085c97e5f42e53b8f94961cf143a1b41f1652af/Daylight.mp3" type="audio/mp3">
+        </audio>
     </div>
 
     <!-- HERO SECTION -->
@@ -175,7 +204,6 @@
             <div class="relative w-56 h-56 md:w-80 md:h-80 mx-auto mb-10">
                 <div class="absolute inset-0 bg-rose-300 rounded-full blur-2xl opacity-30 animate-pulse"></div>
                 <!-- Updated Hero Image with your Drive link -->
-                <!-- Added loading="eager" for Hero image to load fast -->
                 <img src="https://lh3.googleusercontent.com/d/190uVx2OIL6g-nGXJH1T2il_1sLuSSMNp" 
                      referrerpolicy="no-referrer"
                      loading="eager"
@@ -534,7 +562,6 @@
     <footer class="bg-rose-900 text-rose-200 py-8 text-center text-sm border-t border-rose-800">
         <p>Made for my Hanna by her Sweetie</p>
         <div class="mt-2 text-xs opacity-70 flex justify-center items-center gap-2">
-            <!-- FIXED: Replaced Text Emojis with Images for PC Compatibility -->
             <span>India</span>
             <img src="https://flagcdn.com/w20/in.png" alt="India Flag" class="w-4 h-auto inline-block rounded-[1px]">
             <span>&bull;</span>
@@ -630,9 +657,85 @@
             document.getElementById('lightbox').classList.remove('active');
         }
 
-        // 5. MUSIC PLACEHOLDER
+        // 5. BULLETPROOF MUSIC LOGIC (WITH GITHUB LINK & CINEMATIC FADE)
+        const mainMusicLink = "https://raw.githubusercontent.com/sumitpaswan001t-web/for-my-hanna/a085c97e5f42e53b8f94961cf143a1b41f1652af/Daylight.mp3";
+        const backupMusicLink = "https://cdn.pixabay.com/download/audio/2022/03/10/audio_c8c8a73467.mp3";
+        let fadeInterval;
+
         function toggleMusic() {
-            alert("To make this perfect, you can add an MP3 link in the code! 🎵");
+            const audio = document.getElementById('bg-music');
+            const button = document.getElementById('music-btn');
+            const toast = document.getElementById('music-toast');
+            
+            // Clear any existing fade intervals to prevent fighting
+            clearInterval(fadeInterval);
+
+            if (audio.paused) {
+                // STARTING PLAYBACK
+                button.classList.add('spin-slow');
+                button.classList.add('ring-yellow-300'); // Yellow ring = loading
+                toast.innerText = "Loading Music...";
+                toast.classList.add('show');
+                
+                // Set initial volume to 0 for fade in
+                audio.volume = 0;
+                
+                // Try to play primary (GitHub link)
+                const playPromise = audio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        // Success
+                        toast.innerText = "Playing 🎵";
+                        button.classList.remove('ring-yellow-300');
+                        setTimeout(() => { toast.classList.remove('show'); }, 3000);
+                        
+                        // FADE IN LOGIC (0 to 1)
+                        let vol = 0;
+                        fadeInterval = setInterval(() => {
+                            if (vol < 1.0) {
+                                vol += 0.05;
+                                audio.volume = Math.min(vol, 1.0);
+                            } else {
+                                clearInterval(fadeInterval);
+                            }
+                        }, 100); 
+                    })
+                    .catch(error => {
+                        console.error("Playback failed:", error);
+                        // If it fails immediately
+                        toast.innerText = "Tap again if silent";
+                    });
+                }
+            } else {
+                // STOPPING PLAYBACK (Fade Out)
+                toast.classList.remove('show'); // Hide text immediately on stop
+                
+                let vol = audio.volume;
+                
+                // FADE OUT LOGIC (Current to 0)
+                fadeInterval = setInterval(() => {
+                    if (vol > 0.05) {
+                        vol -= 0.05; 
+                        audio.volume = Math.max(vol, 0);
+                    } else {
+                        clearInterval(fadeInterval);
+                        audio.pause();
+                        button.classList.remove('spin-slow');
+                        button.classList.remove('ring-yellow-300');
+                    }
+                }, 100);
+            }
+            
+            // SMART ERROR HANDLER
+            audio.onerror = function() {
+                console.log("Main link failed. Switching to backup.");
+                if (audio.src !== backupMusicLink) {
+                    toast.innerText = "Switching to backup song...";
+                    audio.src = backupMusicLink;
+                    audio.play();
+                }
+            };
         }
 
         // 6. SCROLL ANIMATIONS
@@ -651,3 +754,5 @@
     </script>
 </body>
 </html>
+
+
